@@ -2,7 +2,7 @@ const users = {};
 
 const respondJSON = (requestAnimationFrame, response, status, object) => {
   const headers = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
 
   response.writeHead(status, headers);
@@ -19,5 +19,5 @@ const getUsers = (request, response) => {
 };
 
 module.exports = {
-  getUsers
+  getUsers,
 };
