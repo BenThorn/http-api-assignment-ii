@@ -8,8 +8,8 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
-  const params = query.parse(parsedUrl.query);
-  const acceptedTypes = request.headers.accept.split(',');
+ // const params = query.parse(parsedUrl.query);
+ // const acceptedTypes = request.headers.accept.split(',');
 
   if (parsedUrl.pathname === '/') {
     htmlHandler.getIndex(request, response);
