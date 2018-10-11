@@ -1,16 +1,16 @@
 {
-  "name": "http-api-assignment-ii",
+  "name": "project-1",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
-  "engines": {
-    "node": "9.10.0",
-    "npm": "6.1.0"
-  },
+  "main": "./server/app.js",
   "scripts": {
-    "start": "node ./src/server.js",
-    "pretest": "eslint ./src --fix",
-    "test": "echo \"Tests complete\""
+    "build": "babel ./client --out-file ./hosted/bundle.js",
+    "watch": "babel --watch ./client --out-file ./hosted/bundle.js",
+    "nodemon": "nodemon --watch ./server --watch ./hosted ./server/app.js",
+    "start": "node ./server/app.js",
+    "pretest": "eslint ./server --fix",
+    "test": "echo \"Tests complete\"",
+    "dev": "concurrently --kill-others-on-fail \"sass --watch hosted/style.scss hosted/style.css\" \"npm run watch\" \"npm run nodemon\""
   },
   "repository": {
     "type": "git",
@@ -22,9 +22,13 @@
     "url": "https://github.com/BenThorn/http-api-assignment-ii/issues"
   },
   "homepage": "https://github.com/BenThorn/http-api-assignment-ii#readme",
-  "dependencies": {
-    "eslint": "^5.6.0",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "concurrently": "^4.0.1",
+    "eslint": "^5.6.1",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0"
+    "eslint-plugin-import": "^2.14.0",
+    "nodemon": "^1.18.4"
   }
 }

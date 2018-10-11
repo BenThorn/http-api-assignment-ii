@@ -30,6 +30,19 @@ const handlePost = (request, response, parsedUrl) => {
   }
 };
 
+const jishoApiCall = (request, response) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  console.log('Search');
+  response.writeHead(200, headers);
+  const object = {
+    meaning: 'water',
+  };
+  response.write(JSON.stringify(object));
+  response.end();
+};
+
 const handleGet = (request, response, parsedUrl) => {
   switch (request.method) {
     case 'GET':
@@ -39,6 +52,8 @@ const handleGet = (request, response, parsedUrl) => {
         htmlHandler.getCSS(request, response);
       } else if (parsedUrl.pathname === '/getUsers') {
         jsonHandler.getUsers(request, response);
+      } else if (parsedUrl.pathname === '/search') {
+        jishoApiCall(request, response);
       } else {
         jsonHandler.notFound(request, response);
       }
@@ -66,6 +81,7 @@ const onRequest = (request, response) => {
     handleGet(request, response, parsedUrl);
   }
 };
+
 
 http.createServer(onRequest).listen(port);
 
