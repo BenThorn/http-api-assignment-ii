@@ -2,22 +2,12 @@ const parseJSON = (xhr, content) => {
   //parse response (obj will be empty in a 204 updated)
   const obj = JSON.parse(xhr.response);
   console.dir(obj);
-  
-  //if message in response, add to screen
-  if(obj.message) {
-    const p = document.createElement('p');
-    p.textContent = `Message: ${obj.message}`;
-    content.appendChild(p);
-  }
-  
-  //if users in response, add to screen
-  if(obj.users) {
-    const userList = document.createElement('p');
-    const users = JSON.stringify(obj.users);
-    userList.textContent = users;
-    content.appendChild(userList);
+
+  if(obj) {
+    
   }
 };
+
 
 const handleResponse = (xhr, parseResponse) => {
   const content = document.querySelector('#content');
@@ -45,6 +35,69 @@ const handleResponse = (xhr, parseResponse) => {
   if(parseResponse && xhr.status !== 204) {
     parseJSON(xhr, content);
   }
+};
+
+const parseResults = (xhr, searchResults) => {
+  const obj = JSON.parse(xhr.response);
+  console.dir(obj);
+  searchResults.innerHTML = "";
+
+  if(obj) {
+    const resultData = obj.data;
+    if (resultData.length === 0){
+
+    } else {
+      let result;
+
+      for(let i = 0; i < resultData.length; i++){
+        result = {
+          kanji: resultData[i].japanese[0].word,
+          kana: resultData[i].japanese[0].reading,
+          english: resultData[i].senses[0].english_definitions
+        }
+        const resultDiv = document.createElement('div');
+        const kanji = document.createElement('div');
+        kanji.id = "kanji";
+        kanji.textContent = result.kanji;
+        const kana = document.createElement('div');
+        kana.id = "kana";
+        kana.textContent = result.kana;
+        const eng = document.createElement('div');
+        eng.id = "english";
+        let engDefs = "";
+        if(result.english.length > 1){
+          for (let i = 0; i < result.english.length; i++) {
+            if (i !== result.english.length - 1){
+              engDefs += result.english[i] + ", ";
+            } else {
+              engDefs += result.english[i];
+            }
+          }
+        } else {
+          engDefs = result.english[0];
+        }
+        
+        eng.textContent = engDefs;
+
+        resultDiv.appendChild(kanji);
+        resultDiv.appendChild(kana);
+        resultDiv.appendChild(eng);
+        resultDiv.id = 'resultDiv';
+        searchResults.appendChild(resultDiv);
+
+        console.log(result);
+      }
+    }
+  }
+};
+
+const handleSearch = (xhr) => {
+  const searchResults = document.querySelector("#searchResults");
+
+  if (xhr.status === 200) {
+    parseResults(xhr, searchResults);
+  }
+  
 };
 
 const requestUpdate = (e, userForm) => {
@@ -87,15 +140,15 @@ const requestAdd = (e, nameForm) => {
 };
 
 const requestSearch = (e, searchForm) => {
-  const term = 'water'; //HARD CODED REMOVE
-  const url = `/search?term=${term}`;
+  const term = document.querySelector("#searchField").value;
+  const url = `/search?${term}`;
   const method = 'get';
 
   const xhr = new XMLHttpRequest();
   xhr.open(method, url);
   xhr.setRequestHeader('Accept', 'application/json');
 
-  xhr.onload = () => handleResponse(xhr, true);
+  xhr.onload = () => handleSearch(xhr);
 
   xhr.send();
   
@@ -104,16 +157,10 @@ const requestSearch = (e, searchForm) => {
 };
 
 const init = () => {
-  const userForm = document.querySelector("#userForm");
-  const nameForm = document.querySelector("#nameForm");
-  const searchForm = documetn.querySelector("#searchForm");
+  const searchForm = document.querySelector("#searchForm");
 
-  const userRequest = (e) => requestUpdate(e, userForm);
-  const addRequest = (e) => requestAdd(e, nameForm);
   const searchRequest = (e) => requestSearch(e, searchForm);
 
-  userForm.addEventListener('submit', userRequest);
-  nameForm.addEventListener('submit', addRequest);
   searchForm.addEventListener('submit', searchRequest);
 };
 

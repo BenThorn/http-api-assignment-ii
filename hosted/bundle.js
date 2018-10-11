@@ -5,20 +5,7 @@ var parseJSON = function parseJSON(xhr, content) {
   var obj = JSON.parse(xhr.response);
   console.dir(obj);
 
-  //if message in response, add to screen
-  if (obj.message) {
-    var p = document.createElement('p');
-    p.textContent = 'Message: ' + obj.message;
-    content.appendChild(p);
-  }
-
-  //if users in response, add to screen
-  if (obj.users) {
-    var userList = document.createElement('p');
-    var users = JSON.stringify(obj.users);
-    userList.textContent = users;
-    content.appendChild(userList);
-  }
+  if (obj) {}
 };
 
 var handleResponse = function handleResponse(xhr, parseResponse) {
@@ -52,6 +39,66 @@ var handleResponse = function handleResponse(xhr, parseResponse) {
   }
   if (parseResponse && xhr.status !== 204) {
     parseJSON(xhr, content);
+  }
+};
+
+var parseResults = function parseResults(xhr, searchResults) {
+  var obj = JSON.parse(xhr.response);
+  console.dir(obj);
+  searchResults.innerHTML = "";
+
+  if (obj) {
+    var resultData = obj.data;
+    if (resultData.length === 0) {} else {
+      var result = void 0;
+
+      for (var i = 0; i < resultData.length; i++) {
+        result = {
+          kanji: resultData[i].japanese[0].word,
+          kana: resultData[i].japanese[0].reading,
+          english: resultData[i].senses[0].english_definitions
+        };
+        var resultDiv = document.createElement('div');
+        var kanji = document.createElement('div');
+        kanji.id = "kanji";
+        kanji.textContent = result.kanji;
+        var kana = document.createElement('div');
+        kana.id = "kana";
+        kana.textContent = result.kana;
+        var eng = document.createElement('div');
+        eng.id = "english";
+        var engDefs = "";
+        if (result.english.length > 1) {
+          for (var _i = 0; _i < result.english.length; _i++) {
+            if (_i !== result.english.length - 1) {
+              engDefs += result.english[_i] + ", ";
+            } else {
+              engDefs += result.english[_i];
+            }
+          }
+        } else {
+          engDefs = result.english[0];
+        }
+
+        eng.textContent = engDefs;
+
+        resultDiv.appendChild(kanji);
+        resultDiv.appendChild(kana);
+        resultDiv.appendChild(eng);
+        resultDiv.id = 'resultDiv';
+        searchResults.appendChild(resultDiv);
+
+        console.log(result);
+      }
+    }
+  }
+};
+
+var handleSearch = function handleSearch(xhr) {
+  var searchResults = document.querySelector("#searchResults");
+
+  if (xhr.status === 200) {
+    parseResults(xhr, searchResults);
   }
 };
 
@@ -101,8 +148,8 @@ var requestAdd = function requestAdd(e, nameForm) {
 };
 
 var requestSearch = function requestSearch(e, searchForm) {
-  var term = 'water'; //HARD CODED REMOVE
-  var url = '/search?term=' + term;
+  var term = document.querySelector("#searchField").value;
+  var url = '/search?' + term;
   var method = 'get';
 
   var xhr = new XMLHttpRequest();
@@ -110,7 +157,7 @@ var requestSearch = function requestSearch(e, searchForm) {
   xhr.setRequestHeader('Accept', 'application/json');
 
   xhr.onload = function () {
-    return handleResponse(xhr, true);
+    return handleSearch(xhr);
   };
 
   xhr.send();
@@ -120,22 +167,12 @@ var requestSearch = function requestSearch(e, searchForm) {
 };
 
 var init = function init() {
-  var userForm = document.querySelector("#userForm");
-  var nameForm = document.querySelector("#nameForm");
-  var searchForm = documetn.querySelector("#searchForm");
+  var searchForm = document.querySelector("#searchForm");
 
-  var userRequest = function userRequest(e) {
-    return requestUpdate(e, userForm);
-  };
-  var addRequest = function addRequest(e) {
-    return requestAdd(e, nameForm);
-  };
   var searchRequest = function searchRequest(e) {
     return requestSearch(e, searchForm);
   };
 
-  userForm.addEventListener('submit', userRequest);
-  nameForm.addEventListener('submit', addRequest);
   searchForm.addEventListener('submit', searchRequest);
 };
 

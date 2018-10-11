@@ -1,6 +1,7 @@
 const http = require('http');
 const url = require('url');
 const query = require('querystring');
+const getJSON = require('get-json');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
@@ -30,17 +31,26 @@ const handlePost = (request, response, parsedUrl) => {
   }
 };
 
-const jishoApiCall = (request, response) => {
+const jishoApiCall = (request, response, parsedUrl) => {
   const headers = {
     'Content-Type': 'application/json',
   };
-  console.log('Search');
-  response.writeHead(200, headers);
-  const object = {
-    meaning: 'water',
-  };
-  response.write(JSON.stringify(object));
-  response.end();
+  
+  const url = 'https://jisho.org/api/v1/search/words?keyword=' + parsedUrl.query;
+  let object = {};
+
+  getJSON(url, (error, res) => {
+    if(!error){
+      const object = {
+        data: res.data
+      }
+      response.write(JSON.stringify(object));
+      response.end();
+    } else {
+      console.log(error);
+    }
+  });
+  
 };
 
 const handleGet = (request, response, parsedUrl) => {
@@ -50,10 +60,12 @@ const handleGet = (request, response, parsedUrl) => {
         htmlHandler.getIndex(request, response);
       } else if (parsedUrl.pathname === '/style.css') {
         htmlHandler.getCSS(request, response);
+      } else if (parsedUrl.pathname === '/bundle.js') {
+        htmlHandler.getJS(request, response);
       } else if (parsedUrl.pathname === '/getUsers') {
         jsonHandler.getUsers(request, response);
       } else if (parsedUrl.pathname === '/search') {
-        jishoApiCall(request, response);
+        jishoApiCall(request, response, parsedUrl);
       } else {
         jsonHandler.notFound(request, response);
       }
