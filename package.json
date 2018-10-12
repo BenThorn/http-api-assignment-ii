@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BenThorn/api-project.git"
+    "url": "git+https://github.com/BenThorn/kanji-cards.git"
   },
   "author": "Ben Thorn",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BenThorn/api-project/issues"
+    "url": "https://github.com/BenThorn/kanji-cards/issues"
   },
-  "homepage": "https://github.com/BenThorn/api-project#readme",
+  "homepage": "https://github.com/BenThorn/kanji-cards#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
